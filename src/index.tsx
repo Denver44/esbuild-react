@@ -6,10 +6,18 @@ const App = () => {
   const ref = useRef<any>();
   const [code, setCode] = useState('');
   const [input, setInput] = useState('');
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!ref.current) return;
-    console.log(ref);
+    // transform function actually does the transpiling for us.
+    const res = await ref.current.transform(input, {
+      loader: 'jsx',
+      target: 'es2015',
+    });
+
+    console.log(res);
+    setCode(res.code);
   };
+
   const startService = async () => {
     ref.current = await esBuild.startService({
       worker: true,
