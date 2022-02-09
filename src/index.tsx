@@ -1,22 +1,11 @@
 import * as esBuild from 'esbuild-wasm';
 import ReactDOM from 'react-dom';
 import { useState, useEffect, useRef } from 'react';
-
+import { unpkgPathPlugin } from './plugins/unpkg-path-plugins';
 const App = () => {
   const ref = useRef<any>();
   const [code, setCode] = useState('');
   const [input, setInput] = useState('');
-  const handleSubmit = async () => {
-    if (!ref.current) return;
-    // transform function actually does the transpiling for us.
-    const res = await ref.current.transform(input, {
-      loader: 'jsx',
-      target: 'es2015',
-    });
-
-    console.log(res);
-    setCode(res.code);
-  };
 
   const startService = async () => {
     ref.current = await esBuild.startService({
@@ -24,9 +13,24 @@ const App = () => {
       wasmURL: '/esbuild.wasm',
     });
   };
+
   useEffect(() => {
     startService();
   }, []);
+
+  const handleSubmit = async () => {
+    if (!ref.current) return;
+    // transform function actually does the transpiling for us.
+    const res = await ref.current.build({
+      entryPoints: ['index.js'],
+      bundle: true,
+      write: false,
+      plugins: [unpkgPathPlugin()],
+    });
+
+    console.log(res);
+    setCode(res.outputFiles[0].text);
+  };
 
   return (
     <div>
