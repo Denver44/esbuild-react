@@ -9,11 +9,11 @@ export const unpkgPathPlugin = () => {
         console.log('onResole', args);
         if (args.path === 'index.js')
           return { path: args.path, namespace: 'a' };
-        else if (args.path === 'tiny-test-pkg')
-          return {
-            path: 'https://unpkg.com/tiny-test-pkg@1.0.0/index.js',
-            namespace: 'a',
-          };
+
+        return {
+          namespace: 'a',
+          path: `https://unpkg.com/${args.path}`,
+        };
       });
 
       build.onLoad({ filter: /.*/ }, async (args: any) => {
@@ -28,11 +28,9 @@ export const unpkgPathPlugin = () => {
             `,
           };
         }
-        const { data } = await axios.get(
-          'https://unpkg.com/tiny-test-pkg@1.0.0/index.js'
-        );
+        const { data } = await axios.get(args.path);
 
-        if (args.path === 'https://unpkg.com/tiny-test-pkg@1.0.0/index.js') {
+        if (args.path === 'https://unpkg.com/tiny-test-pkg') {
           return {
             loader: 'jsx',
             contents: data,
