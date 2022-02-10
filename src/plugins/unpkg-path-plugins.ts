@@ -31,10 +31,8 @@ export const unpkgPathPlugin = () => {
           return {
             loader: 'jsx',
             contents: `
-              const message = require('nested-test-pkg');
-              const message2 = require('tiny-test-pkg');
-              console.log(message);
-              console.log(message2);
+              const react = require('react');
+              console.log(react);
             `,
           };
         }
