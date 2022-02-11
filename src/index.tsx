@@ -3,20 +3,21 @@ import ReactDOM from 'react-dom';
 import { useState, useEffect, useRef } from 'react';
 import { unpkgPathPlugin } from './plugins/unpkg-path-plugins';
 import { fetchPlugin } from './plugins/fetch-plugins';
+
+const startService = async (ref: React.MutableRefObject<any>) => {
+  ref.current = await esBuild.startService({
+    worker: true,
+    wasmURL: 'https://unpkg.com/esbuild-wasm@0.8.27/esbuild.wasm',
+  });
+};
+
 const App = () => {
   const ref = useRef<any>();
   const [code, setCode] = useState('');
   const [input, setInput] = useState('');
 
-  const startService = async () => {
-    ref.current = await esBuild.startService({
-      worker: true,
-      wasmURL: '/esbuild.wasm',
-    });
-  };
-
   useEffect(() => {
-    startService();
+    startService(ref);
   }, []);
 
   const handleSubmit = async () => {
