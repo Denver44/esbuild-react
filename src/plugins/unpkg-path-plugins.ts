@@ -1,5 +1,17 @@
 import * as esbuild from 'esbuild-wasm';
+import localForage from 'localforage';
 import axios from 'axios';
+
+const fileCache = localForage.createInstance({
+  name: 'fileCache', // name of our DB
+});
+
+// This way we cached out Data in our IndexDb
+// (async () => {
+//   await fileCache.setItem('color', 'red');
+//   const res = await fileCache.getItem('color');
+//   console.log(res);
+// })();
 
 export const unpkgPathPlugin = () => {
   return {
@@ -36,14 +48,22 @@ export const unpkgPathPlugin = () => {
             `,
           };
         }
-        const { data, request } = await axios.get(args.path);
-        if (args.path.includes('https://unpkg.com/')) {
-          return {
-            loader: 'jsx',
-            contents: data,
-            resolveDir: new URL('./', request.responseURL).pathname,
-          };
+        const cachedResult = await localForage.getItem<esbuild.OnLoadResult>(
+          args.path
+        );
+        if (cachedResult) {
+          return cachedResult;
         }
+
+        const { data, request } = await axios.get(args.path);
+
+        const result: esbuild.OnLoadResult = {
+          loader: 'jsx',
+          contents: data,
+          resolveDir: new URL('./', request.responseURL).pathname,
+        };
+        await localForage.setItem(args.path, result);
+        return result;
       });
     },
   };
