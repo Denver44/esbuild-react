@@ -19,18 +19,28 @@ export const fetchPlugin = (inputCode: string) => {
             contents: inputCode,
           };
         }
-        const cachedResult = await fileCache.getItem<esBuild.OnLoadResult>(
-          args.path
-        );
-        if (cachedResult) {
-          return cachedResult;
-        }
+        // const cachedResult = await fileCache.getItem<esBuild.OnLoadResult>(
+        //   args.path
+        // );
+        // if (cachedResult) {
+        //   return cachedResult;
+        // }
 
         const { data, request } = await axios.get(args.path);
 
+        const fileType = args.path.match(/.css$/) ? 'css' : 'jsx';
+        const contents =
+          fileType === 'css'
+            ? `
+        const style = document.createElement('style');
+        style.innerText = 'body { background-color : "red" }';
+        document.head.appendChild(style);
+        `
+            : data;
+
         const result: esBuild.OnLoadResult = {
           loader: 'jsx',
-          contents: data,
+          contents,
           resolveDir: new URL('./', request.responseURL).pathname,
         };
         await fileCache.setItem(args.path, result);
