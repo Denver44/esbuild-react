@@ -10,23 +10,22 @@ export const fetchPlugin = (inputCode: string) => {
   return {
     name: 'fetch-plugin',
     setup(build: esBuild.PluginBuild) {
+      build.onLoad({ filter: /(^index\.js$)/ }, () => {
+        return {
+          loader: 'jsx',
+          contents: inputCode,
+        };
+      });
+
       build.onLoad({ filter: /.*/ }, async (args: any) => {
-        console.log('onLoad', args);
+        const cachedResult = await fileCache.getItem<esBuild.OnLoadResult>(
+          args.path
+        );
 
-        if (args.path === 'index.js') {
-          return {
-            loader: 'jsx',
-            contents: inputCode,
-          };
-        }
+        if (cachedResult) return cachedResult;
+      });
 
-        // const cachedResult = await fileCache.getItem<esBuild.OnLoadResult>(
-        //   args.path
-        // );
-        // if (cachedResult) {
-        //   return cachedResult;
-        // }
-
+      build.onLoad({ filter: /.css$/ }, async (args: any) => {
         const { data, request } = await axios.get(args.path);
 
         const escaped = data
@@ -34,19 +33,26 @@ export const fetchPlugin = (inputCode: string) => {
           .replace(/"/g, '\\"')
           .replace(/'/g, "\\'");
 
-        const fileType = args.path.match(/.css$/) ? 'css' : 'jsx';
-        const contents =
-          fileType === 'css'
-            ? `
+        const contents = `
         const style = document.createElement('style');
         style.innerText = '${escaped}';
         document.head.appendChild(style);
-        `
-            : data;
+        `;
 
         const result: esBuild.OnLoadResult = {
           loader: 'jsx',
           contents,
+          resolveDir: new URL('./', request.responseURL).pathname,
+        };
+        await fileCache.setItem(args.path, result);
+        return result;
+      });
+
+      build.onLoad({ filter: /.*/ }, async (args: any) => {
+        const { data, request } = await axios.get(args.path);
+        const result: esBuild.OnLoadResult = {
+          loader: 'jsx',
+          contents: data,
           resolveDir: new URL('./', request.responseURL).pathname,
         };
         await fileCache.setItem(args.path, result);
