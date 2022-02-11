@@ -19,6 +19,7 @@ export const fetchPlugin = (inputCode: string) => {
             contents: inputCode,
           };
         }
+
         // const cachedResult = await fileCache.getItem<esBuild.OnLoadResult>(
         //   args.path
         // );
@@ -28,12 +29,17 @@ export const fetchPlugin = (inputCode: string) => {
 
         const { data, request } = await axios.get(args.path);
 
+        const escaped = data
+          .replace(/\n/g, '')
+          .replace(/"/g, '\\"')
+          .replace(/'/g, "\\'");
+
         const fileType = args.path.match(/.css$/) ? 'css' : 'jsx';
         const contents =
           fileType === 'css'
             ? `
         const style = document.createElement('style');
-        style.innerText = 'body { background-color : "red" }';
+        style.innerText = '${escaped}';
         document.head.appendChild(style);
         `
             : data;
