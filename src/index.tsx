@@ -13,7 +13,7 @@ const startService = async (ref: React.MutableRefObject<any>) => {
 
 const App = () => {
   const ref = useRef<any>();
-  const [code, setCode] = useState('');
+  const [code, setCode] = useState<string>('');
   const [input, setInput] = useState('');
 
   useEffect(() => {
@@ -34,8 +34,15 @@ const App = () => {
       },
     });
 
-    console.log(res);
+    // console.log(res);
     setCode(res.outputFiles[0].text);
+
+    // using eval is not a good approach and through we put the eval function in try catch block but still on async code it will throw error if any error occurred at that time
+    try {
+      eval(res.outputFiles[0].text);
+    } catch (error) {
+      alert(error);
+    }
   };
 
   return (
