@@ -52,9 +52,12 @@ const App = () => {
         <button onClick={handleSubmit}>Submit</button>
       </div>
       <pre>{code}</pre>
-      <iframe title="test-frame" src="/test.html" />
+      {/* Now we have broke the direct access of child and parent as we have put the sandbox property  = '' */}
+      <iframe title="test-frame" sandbox="" srcDoc={html} />
     </div>
   );
 };
+
+const html = `<h1>Local HTML doc</h1>`;
 
 ReactDOM.render(<App />, document.querySelector('#root'));
