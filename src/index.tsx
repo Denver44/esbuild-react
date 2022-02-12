@@ -36,15 +36,13 @@ const App = () => {
 
     // console.log(res);
     setCode(res.outputFiles[0].text);
-
-    // using eval is not a good approach and through we put the eval function in try catch block but still on async code it will throw error if any error occurred at that time
-    try {
-      eval(res.outputFiles[0].text);
-    } catch (error) {
-      alert(error);
-    }
   };
 
+  const html = `
+    <script>
+    ${code}
+    </script>
+  `;
   return (
     <div>
       <textarea onChange={(e) => setInput(e.target.value)}></textarea>
@@ -52,12 +50,10 @@ const App = () => {
         <button onClick={handleSubmit}>Submit</button>
       </div>
       <pre>{code}</pre>
-      {/* Now we have broke the direct access of child and parent as we have put the sandbox property  = '' */}
-      <iframe title="test-frame" sandbox="" srcDoc={html} />
+      {/* We told the iframe that please allow the script tag in the iframe */}
+      <iframe title="test-frame" sandbox="allow-scripts" srcDoc={html} />
     </div>
   );
 };
-
-const html = `<h1>Local HTML doc</h1>`;
 
 ReactDOM.render(<App />, document.querySelector('#root'));
