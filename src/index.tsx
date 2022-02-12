@@ -13,6 +13,7 @@ const startService = async (ref: React.MutableRefObject<any>) => {
 
 const App = () => {
   const ref = useRef<any>();
+  const iFrame = useRef<any>();
   const [code, setCode] = useState<string>('');
   const [input, setInput] = useState('');
 
@@ -35,13 +36,25 @@ const App = () => {
     });
 
     // console.log(res);
-    setCode(res.outputFiles[0].text);
+    console.log('iFrame ', iFrame);
+    iFrame.current.contentWindow.postMessage(res.outputFiles[0].text, '*');
   };
 
   const html = `
-    <script>
-    ${code}
-    </script>
+  <!DOCTYPE html>
+  <html lang="en">
+    <head>
+    </head>
+    <body>
+      <div id="root"></div>
+      <script>
+      window.addEventListener("message", (event) => {
+        eval(event.data)
+      }, false);
+      </script>
+    </body>
+  </html>
+  
   `;
   return (
     <div>
@@ -51,7 +64,12 @@ const App = () => {
       </div>
       <pre>{code}</pre>
       {/* We told the iframe that please allow the script tag in the iframe */}
-      <iframe title="test-frame" sandbox="allow-scripts" srcDoc={html} />
+      <iframe
+        ref={iFrame}
+        title="test-frame"
+        sandbox="allow-scripts"
+        srcDoc={html}
+      />
     </div>
   );
 };
