@@ -4,7 +4,7 @@ const CodeEditor = () => {
   return (
     <MonacoEditor
       theme="dark"
-      language="javascript"
+      language="cpp"
       height="500px"
       options={{
         wordWrap: 'on',
@@ -15,6 +15,8 @@ const CodeEditor = () => {
         fontSize: 16,
         scrollBeyondLastLine: false,
         automaticLayout: true,
+        mouseWheelZoom: true,
+        formatOnType: true,
       }}
     />
   );
