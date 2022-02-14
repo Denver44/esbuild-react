@@ -1,11 +1,11 @@
 import 'bulmaswatch/superhero/bulmaswatch.min.css';
-
 import * as esBuild from 'esbuild-wasm';
 import ReactDOM from 'react-dom';
 import { useState, useEffect, useRef } from 'react';
 import { unpkgPathPlugin } from './plugins/unpkg-path-plugins';
 import { fetchPlugin } from './plugins/fetch-plugins';
 import CodeEditor from './components/CodeEditor';
+import Preview from './components/Preview';
 
 const startService = async (ref: React.MutableRefObject<any>) => {
   ref.current = await esBuild.startService({
@@ -14,34 +14,9 @@ const startService = async (ref: React.MutableRefObject<any>) => {
   });
 };
 
-const html = `
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script>
-    window.addEventListener("message", (event) => {
-      try {
-        eval(event.data);
-      } catch (error) {
-        const root = document.querySelector('#root');
-        const errorMsg = '<div style="color: red;"><h4>Runtime Error : </h4>' + error + '</div>';
-        root.innerHTML = errorMsg;
-        console.error(error);
-      }
-    }, false);
-    </script>
-  </body>
-</html>
-`;
-
 const App = () => {
   const ref = useRef<any>();
-  const iFrame = useRef<any>();
-
-  const [code] = useState<string>('');
+  const [code, setCode] = useState<string>('');
   const [input, setInput] = useState('');
 
   useEffect(() => {
@@ -51,7 +26,6 @@ const App = () => {
   const handleSubmit = async () => {
     if (!ref.current) return;
 
-    iFrame.current.srcdoc = html;
     const res = await ref.current.build({
       entryPoints: ['index.js'],
       bundle: true,
@@ -62,7 +36,7 @@ const App = () => {
         global: 'window',
       },
     });
-    iFrame.current.contentWindow.postMessage(res.outputFiles[0].text, '*');
+    setCode(res.outputFiles[0].text);
   };
 
   return (
@@ -71,17 +45,10 @@ const App = () => {
         initialValue="const a = 1;"
         onChange={(value) => setInput(value)}
       />
-      <textarea onChange={(e) => setInput(e.target.value)}></textarea>
       <div>
         <button onClick={handleSubmit}>Submit</button>
       </div>
-      <pre>{code}</pre>
-      <iframe
-        ref={iFrame}
-        title="preview"
-        sandbox="allow-scripts"
-        srcDoc={html}
-      />
+      <Preview code={code} />
     </div>
   );
 };
