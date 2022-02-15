@@ -10,7 +10,7 @@ const TextEditor: React.FC = () => {
       if (
         textEditorRef.current &&
         event?.target &&
-        textEditorRef.current.contains(event.target as Node)
+        textEditorRef.current.contains(event.target as Node) // Contains Except everything as Node due to not appropriate ts file we have to explicitly mentioned Node there.
       ) {
         console.log('Clicked Inside');
         return;
