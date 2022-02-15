@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { ResizableBox, ResizableBoxProps } from 'react-resizable';
 import './style.css';
+
 interface ResizableProps {
   direction: 'horizontal' | 'vertical';
 }
@@ -8,6 +9,7 @@ interface ResizableProps {
 const Resizable: React.FC<ResizableProps> = ({ direction, children }) => {
   const [innerHeight, setInnerHeight] = useState<number>(window.innerHeight);
   const [innerWidth, setInnerWidth] = useState<number>(window.innerWidth);
+  const [width, setWidth] = useState<number>(window.innerWidth * 0.75);
 
   useEffect(() => {
     let timerId: any;
@@ -16,13 +18,16 @@ const Resizable: React.FC<ResizableProps> = ({ direction, children }) => {
       timerId = setTimeout(() => {
         setInnerHeight(window.innerHeight);
         setInnerWidth(window.innerWidth);
+        if (window.innerWidth * 0.75 < width) {
+          setWidth(window.innerWidth * 0.75);
+        }
       }, 100);
     };
     window.addEventListener('resize', listener);
     return () => {
       window.removeEventListener('resize', listener);
     };
-  }, []);
+  }, [width]);
 
   let resizableProps: ResizableBoxProps;
 
@@ -32,8 +37,11 @@ const Resizable: React.FC<ResizableProps> = ({ direction, children }) => {
       minConstraints: [innerWidth * 0.2, Infinity],
       maxConstraints: [innerWidth * 0.75, Infinity],
       height: Infinity,
-      width: window.innerWidth * 0.75,
+      width,
       resizeHandles: ['e'],
+      onResizeStop: (event, data) => {
+        setWidth(data.size.width);
+      },
     };
   } else {
     resizableProps = {
