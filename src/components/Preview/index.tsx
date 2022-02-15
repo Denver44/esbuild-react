@@ -3,6 +3,7 @@ import './style.css';
 
 interface PreviewProps {
   code: string;
+  buildFailMsg: string;
 }
 
 const html = `
@@ -20,8 +21,11 @@ const html = `
       const root = document.querySelector('#root');
       const errorMsg = '<div style="color: red;"><h4>Runtime Error : </h4>' + error + '</div>';
       root.innerHTML = errorMsg;
-      console.error(error);
     }
+    window.addEventListener('error' , (event) => {
+      event.preventDefault();
+      handleError(event.error);
+    })
 
     window.addEventListener("message", (event) => {
       try {
@@ -35,7 +39,7 @@ const html = `
 </html>
 `;
 
-const Preview: React.FC<PreviewProps> = ({ code }) => {
+const Preview: React.FC<PreviewProps> = ({ code, buildFailMsg }) => {
   const iFrame = useRef<any>();
 
   useEffect(() => {
@@ -57,6 +61,7 @@ const Preview: React.FC<PreviewProps> = ({ code }) => {
         sandbox="allow-scripts"
         srcDoc={html}
       />
+      {buildFailMsg && <div className="preview-error">{buildFailMsg}</div>}
     </div>
   );
 };
