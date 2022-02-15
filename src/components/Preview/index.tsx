@@ -3,6 +3,7 @@ import './style.css';
 
 interface PreviewProps {
   code: string;
+  buildFailMsg: string;
 }
 
 const html = `
@@ -13,15 +14,24 @@ const html = `
   </head>
   <body>
     <div id="root"></div>
+
     <script>
+
+    const handleError = (error)=>{
+      const root = document.querySelector('#root');
+      const errorMsg = '<div style="color: red;"><h4>Runtime Error : </h4>' + error + '</div>';
+      root.innerHTML = errorMsg;
+    }
+    window.addEventListener('error' , (event) => {
+      event.preventDefault();
+      handleError(event.error);
+    })
+
     window.addEventListener("message", (event) => {
       try {
         eval(event.data);
       } catch (error) {
-        const root = document.querySelector('#root');
-        const errorMsg = '<div style="color: red;"><h4>Runtime Error : </h4>' + error + '</div>';
-        root.innerHTML = errorMsg;
-        console.error(error);
+        handleError(error);
       }
     }, false);
     </script>
@@ -29,7 +39,7 @@ const html = `
 </html>
 `;
 
-const Preview: React.FC<PreviewProps> = ({ code }) => {
+const Preview: React.FC<PreviewProps> = ({ code, buildFailMsg }) => {
   const iFrame = useRef<any>();
 
   useEffect(() => {
@@ -51,6 +61,7 @@ const Preview: React.FC<PreviewProps> = ({ code }) => {
         sandbox="allow-scripts"
         srcDoc={html}
       />
+      {buildFailMsg && <div className="preview-error">{buildFailMsg}</div>}
     </div>
   );
 };
