@@ -1,0 +1,7 @@
+/* Fixing the CSS Conflicts with Bulma CSS */
+
+.w-md-editor .title {
+  line-height: unset;
+  font-size: unset;
+  font-weight: unset;
+}
