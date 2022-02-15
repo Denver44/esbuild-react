@@ -34,7 +34,12 @@ const Preview: React.FC<PreviewProps> = ({ code }) => {
 
   useEffect(() => {
     iFrame.current.srcdoc = html;
-    iFrame.current.contentWindow.postMessage(code, '*');
+
+    // Here we are giving enough time to our browser to update current.srcdoc with html and then put the postMessage Event Listener
+
+    setTimeout(() => {
+      iFrame.current.contentWindow.postMessage(code, '*');
+    }, 50);
   });
 
   return (
