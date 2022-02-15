@@ -13,15 +13,21 @@ const html = `
   </head>
   <body>
     <div id="root"></div>
+
     <script>
+
+    const handleError = (error)=>{
+      const root = document.querySelector('#root');
+      const errorMsg = '<div style="color: red;"><h4>Runtime Error : </h4>' + error + '</div>';
+      root.innerHTML = errorMsg;
+      console.error(error);
+    }
+
     window.addEventListener("message", (event) => {
       try {
         eval(event.data);
       } catch (error) {
-        const root = document.querySelector('#root');
-        const errorMsg = '<div style="color: red;"><h4>Runtime Error : </h4>' + error + '</div>';
-        root.innerHTML = errorMsg;
-        console.error(error);
+        handleError(error);
       }
     }, false);
     </script>
