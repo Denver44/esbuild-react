@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@monaco-editor/react": "3.7.5",
+    "@redux-devtools/extension": "^3.2.2",
     "@testing-library/jest-dom": "^5.11.8",
     "@testing-library/react": "^11.2.2",
     "@testing-library/user-event": "^12.6.0",
