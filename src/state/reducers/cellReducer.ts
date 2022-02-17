@@ -2,8 +2,6 @@ import { ActionType } from '../action-types';
 import { Action } from '../actions';
 import { Cell } from '../cell';
 import produce from 'immer';
-import { stat } from 'fs';
-import { act } from 'react-dom/test-utils';
 
 interface CellsState {
   loading: boolean;
@@ -34,7 +32,24 @@ const reducer = produce((state: CellsState = initialState, action: Action) => {
       return;
 
     case ActionType.INSERT_CELL_BEFORE:
-      return state;
+      const cell = {
+        content: '',
+        type: action.payload.type,
+        id: randomId(),
+      };
+      state.data[cell.id] = cell;
+
+      const foundIndex = state.order.findIndex(
+        (id) => id === action.payload.id
+      );
+
+      if (foundIndex < 0) {
+        state.order.push(cell.id);
+        return;
+      } else {
+        state.order.splice(foundIndex, 0, cell.id);
+      }
+      return;
 
     case ActionType.MOVE_CELL:
       const { direction } = action.payload;
@@ -50,5 +65,9 @@ const reducer = produce((state: CellsState = initialState, action: Action) => {
       return state;
   }
 });
+const randomId = () => {
+  // bas 36 means letters and numbers
+  return Math.random().toString(36).substr(2, 5);
+};
 
 export default reducer;
