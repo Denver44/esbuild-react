@@ -11,7 +11,7 @@ const CellList: React.FC = () => {
     return (
       <div>
         <ActionBar id={cell.id} />
-        <CellListItem key={cell.id} cell={cell} />;
+        <CellListItem key={cell.id} cell={cell} />
       </div>
     );
   });
