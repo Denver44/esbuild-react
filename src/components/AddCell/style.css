@@ -1,0 +1,25 @@
+.addCell {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 200px;
+  margin: 50px 0;
+  height: 2px;
+  background-color: rgba(211, 211, 211, 0.5);
+  transition: background-color 0.3s;
+}
+
+.addCell-horizontal-line:hover {
+  background-color: rgba(211, 211, 211);
+}
+
+.button-addCell {
+  text-transform: uppercase;
+  font-size: 14px !important;
+  border-radius: 4px !important;
+  opacity: 1 !important;
+}
+
+.icon__text {
+  margin-left: 1px;
+}

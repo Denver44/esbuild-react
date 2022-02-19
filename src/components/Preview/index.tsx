@@ -48,7 +48,7 @@ const Preview: React.FC<PreviewProps> = ({ code, buildFailMsg }) => {
     // Here we are giving enough time to our browser to update current.srcdoc with html and then put the postMessage Event Listener
 
     setTimeout(() => {
-      iFrame.current.contentWindow.postMessage(code, '*');
+      iFrame?.current?.contentWindow?.postMessage(code, '*');
     }, 50);
   }, [code]);
 

@@ -1,0 +1,11 @@
+.action-button {
+  position: absolute;
+  top: 0;
+  z-index: 10;
+  right: 0;
+  opacity: 0.75;
+  transition: opacity 0.3s;
+}
+.action-button:hover {
+  opacity: 1;
+}
