@@ -5,6 +5,9 @@
   color: #d4d4d4 !important;
 }
 
+.card-content {
+  border: 1px solid #d4d4d4;
+}
 .w-md-editor ul {
   line-height: 1;
 }
