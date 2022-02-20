@@ -6,7 +6,7 @@
   margin: 50px 0;
   height: 2px;
   background-color: rgba(211, 211, 211, 0.5);
-  transition: background-color 0.3s;
+  transition: background-color 0.3s ease-in;
 }
 
 .addCell-horizontal-line:hover {
