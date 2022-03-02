@@ -18,6 +18,7 @@ interface CodeCellProps {
 
 const CodeCell: React.FC<CodeCellProps> = ({ cell }) => {
   const { updateCell, createBundle } = useAction();
+
   const bundle = useTypedSelector(
     (state) => state.bundles && state.bundles[cell?.id]
   );
@@ -30,7 +31,7 @@ const CodeCell: React.FC<CodeCellProps> = ({ cell }) => {
     return () => {
       clearTimeout(timerId);
     };
-  }, [cell.content, cell.id]);
+  }, [cell.content, cell.id, createBundle]);
 
   return (
     <Resizable direction="vertical">
