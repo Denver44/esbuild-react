@@ -18,11 +18,16 @@ interface CodeCellProps {
 
 const CodeCell: React.FC<CodeCellProps> = ({ cell }) => {
   const { updateCell, createBundle } = useAction();
+
   const bundle = useTypedSelector(
     (state) => state.bundles && state.bundles[cell?.id]
   );
 
   useEffect(() => {
+    if (!bundle) {
+      createBundle(cell.id, cell.content);
+      return;
+    }
     const timerId = setTimeout(async () => {
       createBundle(cell.id, cell.content);
     }, 750);
@@ -30,7 +35,8 @@ const CodeCell: React.FC<CodeCellProps> = ({ cell }) => {
     return () => {
       clearTimeout(timerId);
     };
-  }, [cell.content, cell.id]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cell.content, cell.id, createBundle]);
 
   return (
     <Resizable direction="vertical">
@@ -41,7 +47,17 @@ const CodeCell: React.FC<CodeCellProps> = ({ cell }) => {
             onChange={(value) => updateCell(cell.id, value)}
           />
         </Resizable>
-        {bundle && <Preview code={bundle.code} buildFailMsg={bundle.err} />}
+        <div className="progress-wrapper">
+          {!bundle || bundle.loading ? (
+            <div className="progress-cover">
+              <progress className="progress is-small is-primary">
+                Loading...
+              </progress>
+            </div>
+          ) : (
+            <Preview code={bundle.code} buildFailMsg={bundle.err} />
+          )}
+        </div>
       </div>
     </Resizable>
   );
