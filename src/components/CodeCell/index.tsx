@@ -18,7 +18,10 @@ interface CodeCellProps {
 
 const CodeCell: React.FC<CodeCellProps> = ({ cell }) => {
   const { updateCell, createBundle } = useAction();
-  const bundle = useTypedSelector((state) => state.bundles[cell.id]);
+  const bundle = useTypedSelector(
+    (state) => state.bundles && state.bundles[cell?.id]
+  );
+
   useEffect(() => {
     const timerId = setTimeout(async () => {
       createBundle(cell.id, cell.content);
@@ -27,7 +30,7 @@ const CodeCell: React.FC<CodeCellProps> = ({ cell }) => {
     return () => {
       clearTimeout(timerId);
     };
-  }, [cell.content, cell.id, createBundle]);
+  }, [cell.content, cell.id]);
 
   return (
     <Resizable direction="vertical">
@@ -38,7 +41,7 @@ const CodeCell: React.FC<CodeCellProps> = ({ cell }) => {
             onChange={(value) => updateCell(cell.id, value)}
           />
         </Resizable>
-        {/* <Preview code={code} buildFailMsg={err} /> */}
+        {bundle && <Preview code={bundle.code} buildFailMsg={bundle.err} />}
       </div>
     </Resizable>
   );
