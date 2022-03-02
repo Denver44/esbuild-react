@@ -24,6 +24,10 @@ const CodeCell: React.FC<CodeCellProps> = ({ cell }) => {
   );
 
   useEffect(() => {
+    if (!bundle) {
+      createBundle(cell.id, cell.content);
+      return;
+    }
     const timerId = setTimeout(async () => {
       createBundle(cell.id, cell.content);
     }, 750);
@@ -31,6 +35,7 @@ const CodeCell: React.FC<CodeCellProps> = ({ cell }) => {
     return () => {
       clearTimeout(timerId);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cell.content, cell.id, createBundle]);
 
   return (
